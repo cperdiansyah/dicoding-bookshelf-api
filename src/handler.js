@@ -100,7 +100,6 @@ const getAllBooksHandler = (request, h) => {
     return response;
   }
 
-
   /* Pencarian jika ada query name */
   if (name) {
     const filteredBooks = books.filter(
@@ -127,8 +126,6 @@ const getAllBooksHandler = (request, h) => {
     const filteredBooks = books.filter(
       (book) => Number(book.reading) === Number(reading)
     );
-
-   
 
     const response = h.response({
       status: "success",
@@ -202,7 +199,7 @@ const editBookHandler = (request, h) => {
     reading,
   } = request.payload;
 
-  if (!("name" in request.payload && name !== undefined)) {
+  if (!name) {
     const response = h
       .response({
         status: "fail",
