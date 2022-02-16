@@ -17,12 +17,6 @@ const addBookHandler = (request, h) => {
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
 
-  const finished = (pageCount, readPage) => {
-    if (pageCount === readPage) {
-      return true;
-    }
-    return false;
-  };
 
   const newBook = {
     name,
@@ -33,7 +27,7 @@ const addBookHandler = (request, h) => {
     pageCount,
     readPage,
     reading,
-    finished: finished(pageCount, readPage),
+    finished: pageCount === readPage ? true : false,
     id,
     insertedAt,
     updatedAt,
