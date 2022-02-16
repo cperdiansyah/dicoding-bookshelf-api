@@ -16,7 +16,7 @@ const addBookHandler = (request, h) => {
 
   const insertedAt = new Date().toISOString();
   const updatedAt = insertedAt;
-
+  const finished = pageCount === readPage;
 
   const newBook = {
     name,
@@ -27,14 +27,18 @@ const addBookHandler = (request, h) => {
     pageCount,
     readPage,
     reading,
-    finished: pageCount === readPage ? true : false,
+    finished,
     id,
     insertedAt,
     updatedAt,
   };
 
-  if (name && pageCount > readPage) {
+  console.log(name);
+  console.log(name !== undefined);
+
+  if (name !== undefined && pageCount >= readPage) {
     books.push(newBook);
+    console.log(books);
     const response = h
       .response({
         status: "success",
@@ -72,7 +76,6 @@ const addBookHandler = (request, h) => {
     message: "Buku gagal ditambahkan",
   });
   response.code(500);
-  console.log("Gagal menambahkan buku");
   return response;
 };
 
@@ -115,6 +118,7 @@ const getAllBooksHandler = (request, h) => {
     response.code(200);
     return response;
   }
+
   /* Pencarian jika ada query reading */
   if (reading) {
     const filteredBooks = books.filter(
