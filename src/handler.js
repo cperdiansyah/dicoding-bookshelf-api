@@ -38,9 +38,22 @@ const addBookHandler = (request, h) => {
     insertedAt,
     updatedAt,
   };
-  books.push(newBook);
 
-  if (!("name" in newBook && newBook.name !== undefined)) {
+  if (name && pageCount > readPage) {
+    books.push(newBook);
+    const response = h
+      .response({
+        status: "success",
+        message: "Buku berhasil ditambahkan",
+        data: {
+          bookId: id,
+        },
+      })
+      .code(201);
+    return response;
+  }
+
+  if (!name) {
     const response = h
       .response({
         status: "fail",
@@ -60,52 +73,91 @@ const addBookHandler = (request, h) => {
     return response;
   }
 
-  const isSuccess = books.filter((book) => book.id == id).length > 0;
-  if (isSuccess) {
-    const response = h
-      .response({
-        status: "success",
-        message: "Buku berhasil ditambahkan",
-        data: {
-          bookId: id,
-        },
-      })
-      .code(201);
-    return response;
-  }
-
   const response = h.response({
     status: "error",
     message: "Buku gagal ditambahkan",
   });
   response.code(500);
+  console.log("Gagal menambahkan buku");
   return response;
 };
 
 const getAllBooksHandler = (request, h) => {
-  if (books.length > 0) {
-    const { id, name, publisher } = books[0];
-
+  const { name, reading, finished } = request.query;
+  /* Pencarian Default jika tidak ada query */
+  if (!name && !reading && !finished) {
     const response = h.response({
       status: "success",
-      message: "Berhasil mengambil semua buku",
       data: {
-        books: [
-          {
-            id,
-            name,
-            publisher,
-          },
-        ],
+        books: books.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
       },
     });
     response.code(200);
     return response;
-  } else {
+  }
+
+
+  /* Pencarian jika ada query name */
+  if (name) {
+    const filteredBooks = books.filter(
+      (book) =>
+        book.name !== undefined &&
+        book.name.toLowerCase().includes(name.toLowerCase())
+    );
     const response = h.response({
       status: "success",
       data: {
-        books: [],
+        books: filteredBooks.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+
+    response.code(200);
+    return response;
+  }
+  /* Pencarian jika ada query reading */
+  if (reading) {
+    const filteredBooks = books.filter(
+      (book) => Number(book.reading) === Number(reading)
+    );
+
+   
+
+    const response = h.response({
+      status: "success",
+      data: {
+        books: filteredBooks.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
+      },
+    });
+    response.code(200);
+    return response;
+  }
+
+  /* Pencarian jika ada query finished */
+  if (finished) {
+    const filteredBooks = books.filter(
+      (book) => Number(book.finished) === Number(finished)
+    );
+
+    const response = h.response({
+      status: "success",
+      data: {
+        books: filteredBooks.map((book) => ({
+          id: book.id,
+          name: book.name,
+          publisher: book.publisher,
+        })),
       },
     });
     response.code(200);
